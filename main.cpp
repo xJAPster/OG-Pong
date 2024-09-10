@@ -3,9 +3,9 @@
 
 using namespace std;
 
-int player1Score=0;
-int player2Score=0;
-int CPUScore=0;
+//declaration space
+int player1Score=0, player2Score=0, CPUScore=0;
+Sound paddle_hit, bounds_hit, point_scored; 
 
 class Ball{
 public:
@@ -17,26 +17,7 @@ public:
         DrawCircle(x,y,radius,WHITE);
     }
 
-    void Update(){
-        x+=speedx;
-        y+=speedy;
-
-        //window edge collision
-        if(y+radius >= GetScreenHeight() || y-radius <=0){
-            speedy*=-1;
-        }
-
-        //scoring
-        if(x+radius >= GetScreenWidth()){
-            player1Score++;
-            ResetBall();
-        }
-        if(x-radius <=0){
-            player2Score++;
-            CPUScore++;
-            ResetBall();
-        }
-    }
+    void Update(); //forward declaration
 
     void ResetBall(){
         x=GetScreenWidth()/2;
@@ -81,6 +62,7 @@ public:
     }
 };
 
+//declaration of objects
 Ball ball;
 PlayerPaddle player1;
 CPU cpu_paddle;
@@ -90,6 +72,11 @@ int main (){
     const int height=800;
     bool menuexit=false;
     bool gameover=false;
+
+    InitAudioDevice(); // loading audio sound fx
+    paddle_hit = LoadSound("paddle_hit.mp3");
+    bounds_hit = LoadSound("boundary_hit.mp3");
+    point_scored = LoadSound("point_score.mp3");
 
     SetTargetFPS(60);
     InitWindow(width, height,"OG Pong!");
@@ -113,7 +100,6 @@ int main (){
     cpu_paddle.height=120;
     cpu_paddle.speed=7;
     
-
     //game loop
     while(!WindowShouldClose()){
 
@@ -124,16 +110,20 @@ int main (){
                 break;
             }
             BeginDrawing();
+
             ClearBackground(BLACK);
             Image menuasset=LoadImage("MENUASSET2.png");
             Texture2D menu=LoadTextureFromImage(menuasset);
 
             DrawTexture(menu,0,0,WHITE);
+
             EndDrawing();
+
             if(WindowShouldClose())gameover=true;
         }
 
         BeginDrawing();
+        
         //drawing the ball
         ball.Update();
         ball.Draw();
@@ -148,9 +138,11 @@ int main (){
         //collision detection
         if(CheckCollisionCircleRec(Vector2{ball.x,ball.y}, 15, Rectangle{player1.x, player1.y,player1.width,player1.height})){
             ball.speedx*=-1;
+            PlaySound(paddle_hit);
         }
         if(CheckCollisionCircleRec(Vector2{ball.x,ball.y}, 15, Rectangle{cpu_paddle.x, cpu_paddle.y,cpu_paddle.width,cpu_paddle.height})){
             ball.speedx*=-1;
+            PlaySound(paddle_hit);
         }
         
         //scoreboard
@@ -183,6 +175,34 @@ int main (){
         if(gameover==true) break;
     }
     
+    //handling opened resources
     CloseWindow();
+    UnloadSound(paddle_hit);
+
+
     return 0;
+}
+
+void Ball::Update(){
+    x+=speedx;
+        y+=speedy;
+
+        //window edge collision
+        if(y+radius >= GetScreenHeight() || y-radius <=0){
+            speedy*=-1;
+            PlaySound(bounds_hit);
+        }
+
+        //scoring
+        if(x+radius >= GetScreenWidth()){
+            player1Score++;
+            PlaySound(point_scored);
+            ResetBall();
+        }
+        if(x-radius <=0){
+            //player2Score++;
+            PlaySound(point_scored);
+            CPUScore++;
+            ResetBall();
+        }
 }

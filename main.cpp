@@ -6,15 +6,17 @@ using namespace std;
 //declaration space
 int player1Score=0, player2Score=0, CPUScore=0;
 Sound paddle_hit, bounds_hit, point_scored; 
+Image menuasset, endasset;
+Texture2D menuscr, endscr;
 
 class Ball{
 public:
-    float x,y;
-    int speedx,speedy;
+    float x, y;
+    int speedx, speedy;
     int radius;
 
     void Draw(){
-        DrawCircle(x,y,radius,WHITE);
+        DrawCircle(x , y, radius, WHITE);
     }
 
     void Update(); //forward declaration
@@ -31,9 +33,9 @@ public:
 
 class PlayerPaddle{
 public:
-    float x,y;
+    float x, y;
     int speed;
-    float width,height;
+    float width, height;
 
     void Draw(){
         DrawRectangle(x,y,width,height,WHITE);
@@ -68,15 +70,16 @@ PlayerPaddle player1;
 CPU cpu_paddle;
 
 int main (){
+    //setup
     const int width=1280;
     const int height=800;
     bool menuexit=false;
     bool gameover=false;
 
     InitAudioDevice(); // loading audio sound fx
-    paddle_hit = LoadSound("paddle_hit.mp3");
-    bounds_hit = LoadSound("boundary_hit.mp3");
-    point_scored = LoadSound("point_score.mp3");
+    paddle_hit = LoadSound("assets/paddle_hit.mp3");
+    bounds_hit = LoadSound("assets/boundary_hit.mp3");
+    point_scored = LoadSound("assets/point_score.mp3");
 
     SetTargetFPS(60);
     InitWindow(width, height,"OG Pong!");
@@ -100,28 +103,32 @@ int main (){
     cpu_paddle.height=120;
     cpu_paddle.speed=7;
     
-    //game loop
+    //game loop start
     while(!WindowShouldClose()){
 
-        //main menu section
+        //MAIN MENU SCREEN ----------------------------------------------
         while(!WindowShouldClose() && menuexit==false){
+
             if(IsKeyPressed(KEY_ENTER)){
                 menuexit=true;
                 break;
             }
+
             BeginDrawing();
 
             ClearBackground(BLACK);
-            Image menuasset=LoadImage("MENUASSET2.png");
-            Texture2D menu=LoadTextureFromImage(menuasset);
+            menuasset=LoadImage("assets/MENUASSET2.png");
+            menuscr=LoadTextureFromImage(menuasset);
 
-            DrawTexture(menu,0,0,WHITE);
+            DrawTexture(menuscr,0,0,WHITE);
 
             EndDrawing();
 
             if(WindowShouldClose())gameover=true;
+
         }
 
+        //GAMEPLAY ----------------------------------------------
         BeginDrawing();
         
         //drawing the ball
@@ -146,8 +153,8 @@ int main (){
         }
         
         //scoreboard
-        DrawText(TextFormat("YOU: %i",player1Score), width/4-20, 20, 30, WHITE);
-        DrawText(TextFormat("CPU: %i",CPUScore), 3*width/4-20, 20, 30, WHITE);
+        DrawText(TextFormat("YOU: %i", player1Score), width/4-20, 20, 30, WHITE);
+        DrawText(TextFormat("CPU: %i", CPUScore), 3*width/4-20, 20, 30, WHITE);
 
         DrawLine(width/2,height,width/2,0,WHITE);
         ClearBackground(BLACK);
@@ -157,52 +164,62 @@ int main (){
         if(player1Score==5||CPUScore==5) gameover=true;
         EndDrawing();
 
-        //game over screen
+        //GAME OVER SCREEN -----------------------------------------
         while(!WindowShouldClose() && !IsKeyPressed(KEY_ENTER) && gameover==true){
-        BeginDrawing();
-        Image endscr = LoadImage("ENDSCREEN_ASSET1.png");
-        Texture2D end=LoadTextureFromImage(endscr);
-        DrawTexture(end,0,0,WHITE);
-        EndDrawing();
-        if(IsKeyPressed(KEY_R)){
-            gameover=false;
-            player1Score=0;
-            player2Score=0;
-            CPUScore=0;
-            break;
+            BeginDrawing();
+
+            endasset = LoadImage("assets/ENDSCREEN_ASSET1.png");
+            endscr=LoadTextureFromImage(endasset);
+            DrawTexture(endscr,0,0,WHITE);
+
+            EndDrawing();
+
+            if(IsKeyPressed(KEY_R)){
+                gameover=false;
+                player1Score=0;
+                player2Score=0;
+                CPUScore=0;
+                break;
+            }
         }
-        }
+
         if(gameover==true) break;
     }
     
     //handling opened resources
     CloseWindow();
     UnloadSound(paddle_hit);
-
+    UnloadSound(bounds_hit);
+    UnloadSound(point_scored);
+    UnloadImage(menuasset);
+    UnloadImage(endasset);
+    UnloadTexture(menuscr);
+    UnloadTexture(endscr);
 
     return 0;
 }
 
+//forward declaration definitions
 void Ball::Update(){
     x+=speedx;
-        y+=speedy;
+    y+=speedy;
 
-        //window edge collision
-        if(y+radius >= GetScreenHeight() || y-radius <=0){
-            speedy*=-1;
-            PlaySound(bounds_hit);
-        }
+    //window edge collision
+    if(y+radius >= GetScreenHeight() || y-radius <=0){
+        speedy*=-1;
+        PlaySound(bounds_hit);
+    }
 
-        //scoring
-        if(x+radius >= GetScreenWidth()){
-            player1Score++;
-            PlaySound(point_scored);
-            ResetBall();
-        }
-        if(x-radius <=0){
-            //player2Score++;
-            PlaySound(point_scored);
-            CPUScore++;
-            ResetBall();
-        }
+    //scoring
+    if(x+radius >= GetScreenWidth()){
+        player1Score++;
+        PlaySound(point_scored);
+        ResetBall();
+    }
+    if(x-radius <=0){
+        //player2Score++;
+        PlaySound(point_scored);
+        CPUScore++;
+        ResetBall();
+    }
 }

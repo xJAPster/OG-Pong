@@ -1,14 +1,13 @@
 #include <iostream>
 #include <raylib.h>
 #include "entities.cpp"
-
 using namespace std;
 
 //declaration space
 int player1Score=0, player2Score=0, CPUScore=0;
 Sound paddle_hit, bounds_hit, point_scored; 
-Image menuasset, endasset;
-Texture2D menuscr, endscr;
+Image menuasset, endasset, modeasset;
+Texture2D menuscr, endscr, modescr;
 
 bool menuexit=false;
 bool gameover=false;
@@ -20,7 +19,7 @@ Player1Paddle player1;
 Player2Paddle player2;
 CPU cpu_paddle;
 
-void initVar(const int& width, const int& height);
+inline void initVar(const int& width, const int& height);
 
 void menuScreen();
 void modeChoose();
@@ -46,15 +45,12 @@ int main (){
     
     //game loop start
     while(!WindowShouldClose()){
-        //MAIN MENU SCREEN ----------------------------------------------
         menuScreen();
         modeChoose();
 
-        //GAME OVER SCREEN ----------------------------------------------
         gameoverScreen();
         if(gameover) break;
 
-        //GAMEPLAY ------------------------------------------------------
         if(!gmode)singleplayer();
         else multiplayer();
 
@@ -68,9 +64,12 @@ int main (){
     UnloadSound(paddle_hit);
     UnloadSound(bounds_hit);
     UnloadSound(point_scored);
+    
     UnloadImage(menuasset);
-    UnloadImage(endasset);
     UnloadTexture(menuscr);
+    UnloadImage(modeasset);
+    UnloadTexture(modescr);
+    UnloadImage(endasset);
     UnloadTexture(endscr);
 
     return 0;
@@ -101,7 +100,7 @@ void Ball::Update(){
     }
 }
 
-void initVar(const int& width, const int& height){
+inline void initVar(const int& width, const int& height){
     ball.radius=15;
     ball.x=width/2;
     ball.y=height/2;
@@ -152,7 +151,10 @@ void modeChoose(){
     while(!WindowShouldClose() && menuexit && !pickMade){
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawText("PRESS:\n1 FOR SINGLEPLAYER\n2 FOR MULTIPLAYER", 452, 355, 30, WHITE);
+        modeasset=LoadImage("assets/GAMEMODEASSET1.png");
+        modescr=LoadTextureFromImage(modeasset);
+
+        DrawTexture(modescr,0,0,WHITE);
         EndDrawing();
 
         if(IsKeyPressed(KEY_ONE)){
@@ -181,6 +183,7 @@ void gameoverScreen(){
 
         if(IsKeyPressed(KEY_R)){
             gameover=false;
+            pickMade=false;
             player1Score=0;
             player2Score=0;
             CPUScore=0;
@@ -222,7 +225,7 @@ void singleplayer(){
     HideCursor();
 }
 
-void multiplayer(){ //to be implemented
+void multiplayer(){ 
     BeginDrawing();
     
     //drawing the ball

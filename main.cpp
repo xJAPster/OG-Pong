@@ -8,8 +8,12 @@ int player1Score=0, player2Score=0, CPUScore=0;
 Sound paddle_hit, bounds_hit, point_scored; 
 Image menuasset, endasset;
 Texture2D menuscr, endscr;
+
 bool menuexit=false;
 bool gameover=false;
+bool pickMade=false;
+bool gmode=false;
+
 
 class Ball{
 public:
@@ -83,6 +87,7 @@ Player2Paddle player2;
 CPU cpu_paddle;
 
 void menuScreen();
+void modeChoose();
 void gameoverScreen();
 void singleplayer();
 void multiplayer();
@@ -129,16 +134,18 @@ int main (){
     while(!WindowShouldClose()){
         //MAIN MENU SCREEN ----------------------------------------------
         menuScreen();
+        modeChoose();
 
         //GAME OVER SCREEN ----------------------------------------------
         gameoverScreen();
         if(gameover) break;
 
         //GAMEPLAY ------------------------------------------------------
-        singleplayer();
+        if(!gmode)singleplayer();
+        else multiplayer();
 
         //game over condition 
-        if(player1Score==5||player2Score==5||CPUScore==5) gameover=true;
+        if(player1Score==2||player2Score==2||CPUScore==2) gameover=true;
         EndDrawing();
     }
     
@@ -196,6 +203,27 @@ void menuScreen(){
         DrawTexture(menuscr,0,0,WHITE);
 
         EndDrawing();
+
+        if(WindowShouldClose())gameover=true;
+    }
+}
+
+void modeChoose(){
+    while(!WindowShouldClose() && menuexit && !pickMade){
+        BeginDrawing();
+        ClearBackground(BLACK);
+        DrawText("PRESS:\n1 FOR SINGLEPLAYER\n2 FOR MULTIPLAYER", 452, 355, 30, WHITE);
+        EndDrawing();
+
+        if(IsKeyPressed(KEY_ONE)){
+            pickMade=1;
+            gmode=0;
+        }
+
+        else if(IsKeyPressed(KEY_TWO)){
+            pickMade=1;
+            gmode=1;
+        }
 
         if(WindowShouldClose())gameover=true;
     }
@@ -279,8 +307,8 @@ void multiplayer(){ //to be implemented
     }
     
     //scoreboard
-    DrawText(TextFormat("YOU: %i", player1Score), (GetScreenWidth())/4-20, 20, 30, WHITE);
-    DrawText(TextFormat("CPU: %i", player2Score), 3*(GetScreenWidth())/4-20, 20, 30, WHITE);
+    DrawText(TextFormat("P1: %i", player1Score), (GetScreenWidth())/4-20, 20, 30, WHITE);
+    DrawText(TextFormat("P2: %i", player2Score), 3*(GetScreenWidth())/4-20, 20, 30, WHITE);
 
     DrawLine((GetScreenWidth())/2, GetScreenHeight(), (GetScreenWidth())/2, 0, WHITE);
     ClearBackground(BLACK);

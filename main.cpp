@@ -1,5 +1,6 @@
 #include <iostream>
 #include <raylib.h>
+#include "entities.cpp"
 
 using namespace std;
 
@@ -14,76 +15,12 @@ bool gameover=false;
 bool pickMade=false;
 bool gmode=false;
 
-class Ball{
-public:
-    float x, y;
-    int speedx, speedy;
-    int radius;
-
-    void Draw(){
-        DrawCircle(x , y, radius, WHITE);
-    }
-
-    void Update(); //forward declaration
-
-    void ResetBall(){
-        x=GetScreenWidth()/2;
-        y=GetScreenHeight()/2;
-
-        int speedreset[2]={-1,1};
-        speedx*=speedreset[GetRandomValue(0,1)];
-        speedy*=speedreset[GetRandomValue(0,1)];
-    }
-};
-
-class Player1Paddle{
-public:
-    float x, y;
-    int speed;
-    float width, height;
-
-    void Draw(){
-        DrawRectangle(x,y,width,height,WHITE);
-    }
-
-    void Update(){
-        if(IsKeyDown(KEY_W))y-=speed;
-        if(IsKeyDown(KEY_S))y+=speed;
-        Limit();
-    }
-
-protected:
-    void Limit(){
-        //out of bounds
-        if(y<0) y=0;
-        if(y+height>=GetScreenHeight()) y=GetScreenHeight()-height;
-    }
-};
-
-class Player2Paddle : public Player1Paddle{
-public:
-    void Update(){
-        if(IsKeyDown(KEY_UP))y-=speed;
-        if(IsKeyDown(KEY_DOWN))y+=speed;
-        Limit();
-    }
-};
-
-class CPU : public Player1Paddle{
-public:
-    //overriding Update() method
-    void Update(int ball_y){
-        if(ball_y > y)y+=speed;
-        if(ball_y < y)y-=speed;
-        Limit();
-    }
-};
-
-//declaration of objects
 Ball ball;
 Player1Paddle player1;
 Player2Paddle player2;
 CPU cpu_paddle;
+
+void initVar(const int& width, const int& height);
 
 void menuScreen();
 void modeChoose();
@@ -105,29 +42,7 @@ int main (){
     InitWindow(width, height,"OG Pong!");
 
     //initializing object attributes
-    ball.radius=15;
-    ball.x=width/2;
-    ball.y=height/2;
-    ball.speedx=8;
-    ball.speedy=8;
-
-    player1.x=10;
-    player1.y=height/2-60;
-    player1.width=25;
-    player1.height=120;
-    player1.speed=7;
-
-    player2.x=width-35;
-    player2.y=height/2-60;
-    player2.width=25;
-    player2.height=120;
-    player2.speed=7;
-
-    cpu_paddle.x=width-35;
-    cpu_paddle.y=height/2-60;
-    cpu_paddle.width=25;
-    cpu_paddle.height=120;
-    cpu_paddle.speed=7;
+    initVar(width, height);
     
     //game loop start
     while(!WindowShouldClose()){
@@ -144,7 +59,7 @@ int main (){
         else multiplayer();
 
         //game over condition 
-        if(player1Score==2||player2Score==2||CPUScore==2) gameover=true;
+        if(player1Score==5||player2Score==5||CPUScore==5) gameover=true;
         EndDrawing();
     }
     
@@ -184,6 +99,32 @@ void Ball::Update(){
         CPUScore++;
         ResetBall();
     }
+}
+
+void initVar(const int& width, const int& height){
+    ball.radius=15;
+    ball.x=width/2;
+    ball.y=height/2;
+    ball.speedx=8;
+    ball.speedy=8;
+
+    player1.x=10;
+    player1.y=height/2-60;
+    player1.width=25;
+    player1.height=120;
+    player1.speed=7;
+
+    player2.x=width-35;
+    player2.y=height/2-60;
+    player2.width=25;
+    player2.height=120;
+    player2.speed=7;
+
+    cpu_paddle.x=width-35;
+    cpu_paddle.y=height/2-60;
+    cpu_paddle.width=25;
+    cpu_paddle.height=120;
+    cpu_paddle.speed=7;
 }
 
 void menuScreen(){

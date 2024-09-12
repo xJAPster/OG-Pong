@@ -14,7 +14,6 @@ bool gameover=false;
 bool pickMade=false;
 bool gmode=false;
 
-
 class Ball{
 public:
     float x, y;

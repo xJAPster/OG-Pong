@@ -1,6 +1,4 @@
-#include <iostream>
-#include <raylib.h>
-#include "fnHeader.h"
+#include "fnHeader.hpp"
 using namespace std;
 
 int main (){

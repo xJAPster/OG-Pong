@@ -10,15 +10,15 @@ int main (){
     SetTargetFPS(60);
     InitWindow(width, height,"OG Pong!");
 
-    paddle_hit = LoadSound("assets/paddle_hit.mp3");
-    bounds_hit = LoadSound("assets/boundary_hit.mp3");
-    point_scored = LoadSound("assets/point_score.mp3");
+    paddle_hit = LoadSound("assets/sfx/paddle_hit.mp3");
+    bounds_hit = LoadSound("assets/sfx/boundary_hit.mp3");
+    point_scored = LoadSound("assets/sfx/point_score.mp3");
 
-    menuasset=LoadImage("assets/MENUASSET2.png");
+    menuasset=LoadImage("assets/vfx/MENUASSET2.png");
     menuscr=LoadTextureFromImage(menuasset);
-    modeasset=LoadImage("assets/GAMEMODEASSET1.png");
+    modeasset=LoadImage("assets/vfx/GAMEMODEASSET1.png");
     modescr=LoadTextureFromImage(modeasset);
-    endasset = LoadImage("assets/ENDSCREEN_ASSET1.png");
+    endasset = LoadImage("assets/vfx/ENDSCREEN_ASSET1.png");
     endscr=LoadTextureFromImage(endasset);
 
     //initializing object attributes

@@ -1,5 +1,4 @@
-#include "fnHeader.h"
-#include<raylib.h>
+#include "fnHeader.hpp"
 
 int player1Score=0, player2Score=0, CPUScore=0;
 bool menuexit=false;

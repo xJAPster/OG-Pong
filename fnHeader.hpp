@@ -1,7 +1,7 @@
 #pragma once
 #include<bits/stdc++.h>
 #include<raylib.h>
-#include "entities.h"
+#include "entities.hpp"
 
 extern int player1Score, player2Score, CPUScore;
 extern Sound paddle_hit, bounds_hit, point_scored; 
